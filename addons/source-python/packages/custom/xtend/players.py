@@ -32,17 +32,11 @@ class PlayerEntity(players.entity.PlayerEntity):
         """Creates a new Xtend's PlayerEntity instance."""
         if index in cls._instances:
             return cls._instances[index]
-        return super().__new__(cls, index)
-
-    def __init__(self, index):
-        """Initializes a new Xtend's PlayerEntity instance."""
+        self = super().__new__(cls, index)
+        cls._instances[index] = self
         self._effects = []
         self._burning = False  # Prevent flame animation from flashing
-
-    @property
-    def burning(self):
-        """Returns if the player is burning or not."""
-        return self._burning
+        return self
 
     def __setattr__(self, attr, value):
         """Override BaseEntity's way of setting only properties."""
@@ -50,6 +44,57 @@ class PlayerEntity(players.entity.PlayerEntity):
             object.__setattr__(self, attr, value)
         else:
             super().__setattr__(attr, value)
+
+    def _apply_effects(self):
+        """Applies effects properly to a player."""
+        if 'noclip' in self._effects:
+            self.movetype = MoveType.NOCLIP
+        elif 'freeze' in self._effects:
+            self.movetype = MoveType.NONE
+        elif 'jetpack' in self._effects:
+            self.movetype = MoveType.JETPACK
+        else:
+            self.movetype = MoveType.WALK
+        if 'burn' in self._effects:
+            self.ignite()
+            self._burning = True
+        elif self._burning:  # Prevent flame animation from flashing
+            self.ignite_lifetime(0)
+            self._burning = False
+
+    def add_effect(self, effect, duration=None):
+        """Adds a new effect to a player."""
+        self._effects.append(effect)
+        if duration is not None:
+            tick_delays.delay(duration, self.remove_effect, effect)
+        self._apply_effects()
+
+    def remove_effect(self, effect):
+        """Removes a effect from a player."""
+        if effect in self._effects:
+            self._effects.remove(effect)
+        self._apply_effects()
+
+    def clear_effects(self, effect=None):
+        """Clears effects from a player."""
+        if effect is not None:
+            while effect in self._effects:
+                self._effects.remove(effect)
+        else:
+            self._effects.clear()
+        self._apply_effects()
+
+    freeze = lambda self, duration: self.add_effect('freeze', duration)
+    freeze.__doc__ = """Freezes a player."""
+
+    noclip = lambda self, duration: self.add_effect('noclip', duration)
+    noclip.__doc__ = """Noclips a player."""
+
+    jetpack = lambda self, duration: self.add_effect('jetpack', duration)
+    jetpack.__doc__ = """Jetpacks a player."""
+
+    burn = lambda self, duration: self.add_effect('burn', duration)
+    burn.__doc__ = """Burns a player."""
 
     def tell(self, message):
         """Sends a simple message using SayText2."""
@@ -87,53 +132,3 @@ class PlayerEntity(players.entity.PlayerEntity):
         """Gets players within a radius sorted by their distance."""
         return get_nearby_players(
             self.location, radius, is_filters, not_filters)
-
-    def _apply_effects(self):
-        """Applies effects properly to a player."""
-        if 'noclip' in self._effects:
-            self.movetype = MoveType.NOCLIP
-        elif 'freeze' in self._effects:
-            self.movetype = MoveType.NONE
-        elif 'jetpack' in self._effects:
-            self.movetype = MoveType.JETPACK
-        else:
-            self.movetype = MoveType.WALK
-        if 'burn' in self._effects:
-            self.ignite()
-            self._burning = True
-        elif self.burning:  # Prevent flame animation from flashing
-            self.ignite_lifetime(0)
-
-    def add_effect(self, effect, duration=None):
-        """Adds a new effect to a player."""
-        self._effects.append(effect)
-        if duration is not None:
-            tick_delays.delay(duration, self.remove_effect, effect)
-        self._apply_effects()
-
-    def remove_effect(self, effect):
-        """Removes a effect from a player."""
-        if effect in self._effects:
-            self._effects.remove(effect)
-        self._apply_effects()
-
-    def clear_effects(self, effects=None):
-        """Clears effects from a player."""
-        if effects is not None:
-            while effects in self._effects:
-                self._effects.remove(effects)
-        else:
-            self._effects.clear()
-        self._apply_effects()
-
-    freeze = lambda self, duration: self.add_effect('freeze', duration)
-    freeze.__doc__ = """Freezes a player."""
-
-    noclip = lambda self, duration: self.add_effect('noclip', duration)
-    noclip.__doc__ = """Noclips a player."""
-
-    jetpack = lambda self, duration: self.add_effect('jetpack', duration)
-    jetpack.__doc__ = """Jetpacks a player."""
-
-    burn = lambda self, duration: self.add_effect('burn', duration)
-    burn.__doc__ = """Burns a player."""
