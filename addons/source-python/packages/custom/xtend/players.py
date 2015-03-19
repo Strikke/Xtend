@@ -96,8 +96,8 @@ class PlayerEntity(players.entity.PlayerEntity):
     burn = lambda self, duration: self.add_effect('burn', duration)
     burn.__doc__ = """Burns a player."""
 
-    def tell(self, message):
-        """Sends a simple message using SayText2."""
+    def message(self, message):
+        """Sends a message using SayText2."""
         SayText2(message=message).send(self.index)
 
     def shift_property(self, prop_name, shift, duration=None):
