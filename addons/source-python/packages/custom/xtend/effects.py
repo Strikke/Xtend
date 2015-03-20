@@ -121,7 +121,7 @@ class BeamEnts(_EffectBase):
         ('delay', 0),
         ('start_index', 0),
         ('end_index', 0),
-        ('model_index', models['sprites/lasterbeam.vmt'].index),
+        ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
@@ -147,7 +147,7 @@ class BeamFollow(_EffectBase):
     args = OrderedDict([
         ('delay', 0),
         ('index', 0),
-        ('model_index', models['sprites/lasterbeam.vmt'].index),
+        ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('life', 1),
         ('start_width', 1),
