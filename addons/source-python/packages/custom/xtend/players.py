@@ -1,9 +1,18 @@
+# ======================================================================
+# >> IMPORTS
+# ======================================================================
+
+# Source.Python
 import players.entity
 from filters.players import PlayerIter
 from messages import SayText2
 from listeners.tick import tick_delays
 from entities.constants import MoveType
 
+
+# ======================================================================
+# >> FUNCTIONS
+# ======================================================================
 
 def get_nearby_players(p_vector, radius, is_filters=None, not_filters=None):
     """Gets a list of players near a vector, sorted by distance."""
@@ -15,6 +24,10 @@ def get_nearby_players(p_vector, radius, is_filters=None, not_filters=None):
             players[distance] = player
     return sorted(players)
 
+
+# ======================================================================
+# >> CLASSES
+# ======================================================================
 
 class PlayerEntity(players.entity.PlayerEntity):
     """
