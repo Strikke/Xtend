@@ -115,9 +115,9 @@ class BeamEntPoint(_EffectBase):
         ('end_width', 1),
         ('fade', 0),
         ('amplitude', 10),
-        ('red', 255),
-        ('green', 255),
-        ('blue', 255),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
         ('alpha', 255),
         ('speed', 10)
     ])
@@ -142,9 +142,9 @@ class BeamEnts(_EffectBase):
         ('end_width', 1),
         ('fade', 0),
         ('amplitude', 10),
-        ('red', 255),
-        ('green', 255),
-        ('blue', 255),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
         ('alpha', 255),
         ('speed', 10)
     ])
@@ -165,9 +165,9 @@ class BeamFollow(_EffectBase):
         ('start_width', 1),
         ('end_width', 1),
         ('fade', 0),
-        ('red', 255),
-        ('green', 255),
-        ('blue', 255),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
         ('alpha', 255)
     ])
 
@@ -191,9 +191,9 @@ class BeamPoints(_EffectBase):
         ('end_width', 1),
         ('fade', 0),
         ('amplitude', 10),
-        ('red', 255),
-        ('green', 255),
-        ('blue', 255),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
         ('alpha', 255),
         ('speed', 10)
     ])
