@@ -3,6 +3,7 @@
 # ======================================================================
 
 # Python 3
+from collections import defaultdict
 from collections import OrderedDict
 
 # Source.Python
@@ -13,12 +14,37 @@ from mathlib import Vector
 
 
 # ======================================================================
-# >> GlOBALS
+# >> HELPERS
 # ======================================================================
 
-models = {f: Model(f) for f in (
-    'sprites/laserbeam.vmt',
-)}
+class _keydefaultdict(defaultdict):
+    """
+    http://stackoverflow.com/a/2912455/2505645
+    """
+
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError(key)
+        else:
+            ret = self[key] = self.default_factory(key)
+            return ret
+
+
+def _update_ordered_dict(ordered_dict, args, kwargs):
+    """Updates an OrderedDict object."""
+    if len(args) > len(ordered_dict):
+        raise IndexError('Too many arguments given')
+    keys = ordered_dict.keys()
+    for i, v in enumerate(args):
+        ordered_dict[keys[i]] = v
+    ordered_dict.update(kwargs)
+
+
+# ======================================================================
+# >> GLOBALS
+# ======================================================================
+
+models = _keydefaultdict(Model)
 
 
 # ======================================================================
@@ -32,20 +58,6 @@ __all__ = (
     'BeamPoints',
     'BeamFollow'
 )
-
-
-# ======================================================================
-# >> FUNCTIONS
-# ======================================================================
-
-def update_ordered_dict(ordered_dict, args, kwargs):
-    """Updates an OrderedDict object."""
-    if len(args) > len(ordered_dict):
-        raise IndexError('Too many arguments given')
-    keys = ordered_dict.keys()
-    for i, v in enumerate(args):
-        ordered_dict[keys[i]] = v
-    ordered_dict.update(kwargs)
 
 
 # ======================================================================
@@ -68,13 +80,13 @@ class _EffectBase:
     def __init__(self, *args, **kwargs):
         """Initializes a new effect."""
         self.args = self.args.copy()
-        update_ordered_dict(self.args, args, kwargs)
+        _update_ordered_dict(self.args, args, kwargs)
 
     def __call__(self, recipients=None, *args, **kwargs):
         """Sends the effect."""
         recipients = RecipientFilter() if recipients is None else recipients
         arguments = self.args.copy()
-        update_ordered_dict(arguments, args, kwargs)
+        _update_ordered_dict(arguments, args, kwargs)
         self.function(recipients, *arguments.values())
 
 
