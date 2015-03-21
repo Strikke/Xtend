@@ -115,10 +115,10 @@ class BeamEntPoint(_EffectBase):
         ('end_width', 1),
         ('fade_length', 0),
         ('amplitude', 10),
-        ('r', 0),
-        ('g', 0),
-        ('b', 0),
-        ('a', 255),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
+        ('alpha', 255),
         ('speed', 10)
     ])
 
