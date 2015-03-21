@@ -23,7 +23,7 @@ def get_nearby_players(p_vector, radius, is_filters=None, not_filters=None):
     players = {}
     for index in PlayerIter(is_filters, not_filters):
         player = PlayerEntity(index)
-        distance = p_vector.get_distance(player.location)
+        distance = p_vector.get_distance(player.get_origin())
         if distance <= radius:
             players[distance] = player
     return sorted(players)
@@ -131,7 +131,7 @@ class PlayerEntity(players.entity.PlayerEntity):
 
     def push_to(self, vector, force):
         """Pushes player towards a point vector with a force."""
-        return self.push((vector - self.location) * force)
+        return self.push((vector - self.get_origin()) * force)
 
     def boost_velocity(self, x_multiplier=1, y_multiplier=1, z_multiplier=1):
         """Boosts player's velocity."""
@@ -148,4 +148,4 @@ class PlayerEntity(players.entity.PlayerEntity):
     def get_nearby_players(self, radius, is_filters=None, not_filters=None):
         """Gets players within a radius sorted by their distance."""
         return get_nearby_players(
-            self.location, radius, is_filters, not_filters)
+            self.get_origin(), radius, is_filters, not_filters)

@@ -27,7 +27,7 @@ class _keydefaultdict(defaultdict):
         if self.default_factory is None:
             raise KeyError(key)
         else:
-            ret = self[key] = self.default_factory(key)
+            ret = self[key] = self.default_factory(key).index
             return ret
 
 
@@ -45,7 +45,7 @@ def _update_ordered_dict(ordered_dict, args, kwargs):
 # >> GLOBALS
 # ======================================================================
 
-models = _keydefaultdict(Model)
+_model_indexes = _keydefaultdict(Model)
 
 
 # ======================================================================
@@ -53,7 +53,6 @@ models = _keydefaultdict(Model)
 # ======================================================================
 
 __all__ = (
-    'models',
     'BeamEntPoint',
     'BeamEnts',
     'BeamPoints',
@@ -88,6 +87,17 @@ class _EffectBase:
         recipients = RecipientFilter() if recipients is None else recipients
         arguments = self.args.copy()
         _update_ordered_dict(arguments, args, kwargs)
+
+        # Update model's path to the model's index
+        model = arguments.get('model')
+        if model and isinstance(model, str):
+            arguments['model'] = _model_indexes[model]
+        else:
+            arguments['model'] = 0
+        for k in arguments:
+            print(k, arguments[k])
+
+        # Call the function
         self.function(recipients, *arguments.values())
 
     @classmethod
@@ -117,7 +127,7 @@ class BeamEntPoint(_EffectBase):
         ('start_position', Vector()),
         ('end_ent_index', 0),
         ('end_position', Vector()),
-        ('model_index', models['sprites/laserbeam.vmt'].index),
+        ('model', None),
         ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
@@ -140,7 +150,7 @@ class BeamEnts(_EffectBase):
         ('delay', 0),
         ('start_ent_index', 0),
         ('end_ent_index', 0),
-        ('model_index', models['sprites/laserbeam.vmt'].index),
+        ('model', None),
         ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
@@ -162,7 +172,7 @@ class BeamFollow(_EffectBase):
     args = OrderedDict([
         ('delay', 0),
         ('ent_index', 0),
-        ('model_index', models['sprites/laserbeam.vmt'].index),
+        ('model', None),
         ('halo_index', 0),
         ('life', 1),
         ('start_width', 1),
@@ -181,7 +191,7 @@ class BeamPoints(_EffectBase):
         ('delay', 0),
         ('start_position', Vector()),
         ('end_position', Vector()),
-        ('model_index', models['sprites/laserbeam.vmt'].index),
+        ('model', None),
         ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
@@ -204,7 +214,7 @@ class BeamRing(_EffectBase):
         ('delay', 0),
         ('start_ent_index', 0),
         ('end_ent_index', 0),
-        ('model_index', 0),
+        ('model', None),
         ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
@@ -228,8 +238,8 @@ class BeamRingPoint(_EffectBase):
         ('origin', Vector()),
         ('start_radius', 1),
         ('end_radius', 100),
-        ('model_index', ),
-        ('halo_index', ),
+        ('model', None),
+        ('halo_index', 0),
         ('start_frame', 0),
         ('frame_rate', 255),
         ('life', 1),
@@ -245,8 +255,8 @@ class BeamRingPoint(_EffectBase):
     ])
 
 
-class BloodSprites(_EffectBase):
-    function = temp_entities.blood_sprites
+class BloodSprite(_EffectBase):
+    function = temp_entities.blood_sprite
     args = OrderedDict([
         ('delay', 0),
         ('position', Vector()),
@@ -281,7 +291,7 @@ class BreakModel(_EffectBase):
         ('angle', 0),
         ('size', Vector()),
         ('velocity', Vector()),
-        ('model_index', 0),
+        ('model', None),
         ('randomization', 0),
         ('count', 1),
         ('flags', 0)
@@ -295,7 +305,7 @@ class BubbleTrail(_EffectBase):
         ('start_position', Vector()),
         ('end_position', Vector()),
         ('water_level', 0),
-        ('model_index', 0),
+        ('model', None),
         ('count', 1),
         ('speed', 1)
     ])
@@ -308,7 +318,7 @@ class Bubbles(_EffectBase):
         ('start_position', Vector()),
         ('end_position', Vector()),
         ('height', 1),
-        ('model_index', 0),
+        ('model', None),
         ('count', 1),
         ('speed', 1)
     ])
