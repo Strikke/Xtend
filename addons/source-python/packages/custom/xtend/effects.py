@@ -7,6 +7,7 @@ from collections import defaultdict
 from collections import OrderedDict
 
 # Source.Python
+from effects import DispatchEffectData
 from effects import temp_entities
 from engines.precache import Model
 from filters.recipients import RecipientFilter
@@ -89,23 +90,33 @@ class _EffectBase:
         _update_ordered_dict(arguments, args, kwargs)
         self.function(recipients, *arguments.values())
 
+    @classmethod
+    def direct(cls, recipients=None, *args, **kwargs):
+        """Directly call an effect from a class without an instance."""
+        cls.__call__(cls, recipients, *args, **kwargs)
+
 
 # ======================================================================
 # >> EFFECTS
 # ======================================================================
 
-class BeamEntPoint(_EffectBase):
-    """
-    Effect to create a beam between two points (vectors).
-    """
+class ArmorRicochet(_EffectBase):
+    function = temp_entities.armor_ricochet
+    args = OrderedDict([
+        ('delay', 0),
+        ('position', Vector()),
+        ('direction', Vector())
+    ])
 
+
+class BeamEntPoint(_EffectBase):
     function = temp_entities.beam_ent_point
     args = OrderedDict([
         ('delay', 0),
-        ('start_index', 0),
-        ('start_vector', Vector()),
-        ('end_index', 0),
-        ('end_vector', Vector()),
+        ('start_ent_index', 0),
+        ('start_position', Vector()),
+        ('end_ent_index', 0),
+        ('end_position', Vector()),
         ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('start_frame', 0),
@@ -114,25 +125,21 @@ class BeamEntPoint(_EffectBase):
         ('start_width', 1),
         ('end_width', 1),
         ('fade_length', 0),
-        ('amplitude', 10),
+        ('amplitude', 0),
         ('red', 0),
         ('green', 0),
         ('blue', 0),
         ('alpha', 255),
-        ('speed', 10)
+        ('speed', 1)
     ])
 
 
 class BeamEnts(_EffectBase):
-    """
-    Effect to create a beam between two entities.
-    """
-
     function = temp_entities.beam_ents
     args = OrderedDict([
         ('delay', 0),
-        ('start_index', 0),
-        ('end_index', 0),
+        ('start_ent_index', 0),
+        ('end_ent_index', 0),
         ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('start_frame', 0),
@@ -141,24 +148,20 @@ class BeamEnts(_EffectBase):
         ('start_width', 1),
         ('end_width', 1),
         ('fade_length', 0),
-        ('amplitude', 10),
+        ('amplitude', 0),
         ('red', 0),
         ('green', 0),
         ('blue', 0),
         ('alpha', 255),
-        ('speed', 10)
+        ('speed', 1)
     ])
 
 
 class BeamFollow(_EffectBase):
-    """
-    Effect to create a beam that follows an entity.
-    """
-
     function = temp_entities.beam_follow
     args = OrderedDict([
         ('delay', 0),
-        ('index', 0),
+        ('ent_index', 0),
         ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('life', 1),
@@ -173,15 +176,11 @@ class BeamFollow(_EffectBase):
 
 
 class BeamPoints(_EffectBase):
-    """
-    Effect to create a beam between wut.
-    """
-
     function = temp_entities.beam_points
     args = OrderedDict([
         ('delay', 0),
-        ('start_vector', Vector()),
-        ('end_vector', Vector()),
+        ('start_position', Vector()),
+        ('end_position', Vector()),
         ('model_index', models['sprites/laserbeam.vmt'].index),
         ('halo_index', 0),
         ('start_frame', 0),
@@ -190,10 +189,136 @@ class BeamPoints(_EffectBase):
         ('start_width', 1),
         ('end_width', 1),
         ('fade_length', 0),
-        ('amplitude', 10),
+        ('amplitude', 0),
         ('red', 0),
         ('green', 0),
         ('blue', 0),
         ('alpha', 255),
-        ('speed', 10)
+        ('speed', 1)
+    ])
+
+
+class BeamRing(_EffectBase):
+    function = temp_entities.beam_ring
+    args = OrderedDict([
+        ('delay', 0),
+        ('start_ent_index', 0),
+        ('end_ent_index', 0),
+        ('model_index', 0),
+        ('halo_index', 0),
+        ('start_frame', 0),
+        ('frame_rate', 255),
+        ('life', 1),
+        ('width', 1),
+        ('spread', 1),
+        ('amplitude', 0),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
+        ('alpha', 255),
+        ('speed', 1),
+        ('flags', 0)
+    ])
+
+
+class BeamRingPoint(_EffectBase):
+    function = temp_entities.beam_ring_point
+    args = OrderedDict([
+        ('delay', 0),
+        ('origin', Vector()),
+        ('start_radius', 1),
+        ('end_radius', 100),
+        ('model_index', ),
+        ('halo_index', ),
+        ('start_frame', 0),
+        ('frame_rate', 255),
+        ('life', 1),
+        ('width', 1),
+        ('spread', 1),
+        ('amplitude', 0),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
+        ('alpha', 255),
+        ('speed', 1),
+        ('flags', 0)
+    ])
+
+
+class BloodSprites(_EffectBase):
+    function = temp_entities.blood_sprites
+    args = OrderedDict([
+        ('delay', 0),
+        ('position', Vector()),
+        ('direction', Vector()),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
+        ('alpha', 255),
+        ('size', 5)
+    ])
+
+
+class BloodStream(_EffectBase):
+    function = temp_entities.blood_stream
+    args = OrderedDict([
+        ('delay', 0),
+        ('position', Vector()),
+        ('direction', Vector()),
+        ('red', 0),
+        ('green', 0),
+        ('blue', 0),
+        ('alpha', 255),
+        ('amount', 5)
+    ])
+
+
+class BreakModel(_EffectBase):
+    function = temp_entities.break_model
+    args = OrderedDict([
+        ('delay', 0),
+        ('position', Vector()),
+        ('angle', 0),
+        ('size', Vector()),
+        ('velocity', Vector()),
+        ('model_index', 0),
+        ('randomization', 0),
+        ('count', 1),
+        ('flags', 0)
+    ])
+
+
+class BubbleTrail(_EffectBase):
+    function = temp_entities.bubble_trail
+    args = OrderedDict([
+        ('delay', 0),
+        ('start_position', Vector()),
+        ('end_position', Vector()),
+        ('water_level', 0),
+        ('model_index', 0),
+        ('count', 1),
+        ('speed', 1)
+    ])
+
+
+class Bubbles(_EffectBase):
+    function = temp_entities.bubbles
+    args = OrderedDict([
+        ('delay', 0),
+        ('start_position', Vector()),
+        ('end_position', Vector()),
+        ('height', 1),
+        ('model_index', 0),
+        ('count', 1),
+        ('speed', 1)
+    ])
+
+
+class DispatchEffect(_EffectBase):
+    function = temp_entities.dispatch_effect
+    args = OrderedDict([
+        ('delay', 0),
+        ('position', Vector()),
+        ('name', ''),
+        ('data', DispatchEffectData())
     ])
