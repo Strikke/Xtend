@@ -92,10 +92,6 @@ class _EffectBase:
         model = arguments.get('model')
         if model and isinstance(model, str):
             arguments['model'] = _model_indexes[model]
-        else:
-            arguments['model'] = 0
-        for k in arguments:
-            print(k, arguments[k])
 
         # Call the function
         self.function(recipients, *arguments.values())
